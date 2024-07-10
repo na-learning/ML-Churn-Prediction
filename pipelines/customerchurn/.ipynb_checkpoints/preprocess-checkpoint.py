@@ -5,26 +5,26 @@ import pandas as pd
 import datetime as dt
 
 if __name__ == "__main__":
-    
+
     base_dir = "/opt/ml/processing"
-    #Read Data
+    # Read Data
     df = pd.read_csv(
         f"{base_dir}/input/storedata_total.csv"
     )
     # convert created column to datetime
     df["created"] = pd.to_datetime(df["created"])
-    #Convert firstorder and lastorder to datetime datatype
-    df["firstorder"] = pd.to_datetime(df["firstorder"],errors='coerce')
-    df["lastorder"] = pd.to_datetime(df["lastorder"],errors='coerce')
-    #Drop Rows with Null Values
+    # Convert firstorder and lastorder to datetime datatype
+    df["firstorder"] = pd.to_datetime(df["firstorder"], errors='coerce')
+    df["lastorder"] = pd.to_datetime(df["lastorder"], errors='coerce')
+    # Drop Rows with Null Values
     df = df.dropna()
-    #Create column which gives the days between the last order and the first order
+    # Create column which gives the days between the last order and the first order
     df['first_last_days_diff'] = (df['lastorder'] - df['firstorder']).dt.days
-    #Create column which gives the days between the customer record was created and the first order
+    # Create column which gives the days between the customer record was created and the first order
     df['created_first_days_diff'] = (df['created'] - df['firstorder']).dt.days
-    #Drop columns
-    df.drop(['custid', 'created','firstorder','lastorder'], axis=1, inplace=True)
-    #Apply one hot encoding on favday and city columns
+    # Drop columns
+    df.drop(['custid', 'created', 'firstorder', 'lastorder'], axis=1, inplace=True)
+    # Apply one hot encoding on favday and city columns
     df = pd.get_dummies(df, prefix=['favday', 'city'], columns=['favday', 'city'])
     # Split into train, validation and test datasets
     y = df.pop("retained")
